@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+            <title>Hillshade-5m-Cornwall</title>
+
+            <!-- Leaflet -->
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+            integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+            crossorigin=""/>
+            <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+            integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+            crossorigin=""></script>
+	        <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+            <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+
+            <style>
+		html, body { 
+	    	height: 100%; 
+	    	padding: 0; 
+	    	margin: 0; 
+	        }
+	        .leaflet-container {
+                    background:#b3b3b3
+                }
+                    #map {
+                    position:absolute;
+                    top:0;
+                    bottom:0;
+                    width:100%;
+                    height: 100%
+	        } 
+            </style>
+
+        </head>
+        <body>
+
+        <div id="map"></div>
+
+        <script>
+		        L.GridLayer.GridDebug = L.GridLayer.extend({
+				createTile: function (coords) {
+							const tile = document.createElement('div');
+							tile.style.outline = '1px solid green';
+							tile.style.fontWeight = 'bold';
+							tile.style.fontSize = '14pt';
+							tile.innerHTML = [coords.z, coords.x, (2 ** coords.z - coords.y)-1].join('/');
+								return tile;
+				},
+		});
+
+		L.gridLayer.gridDebug = function (opts) {
+			return new L.GridLayer.GridDebug(opts);
+		};
+
+        var grid = L.gridLayer.gridDebug();
+        /* **** Leaflet **** */
+
+        // Base layers
+        //  .. OpenStreetMap
+        var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});
+
+        //  .. White background
+        var white = L.tileLayer("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEX///+nxBvIAAAAH0lEQVQYGe3BAQ0AAADCIPunfg43YAAAAAAAAAAA5wIhAAAB9aK9BAAAAABJRU5ErkJggg==");
+        var grey = L.tileLayer("");
+        // Overlay layers (TMS)
+    var lyr = L.tileLayer('./{z}/{x}/{y}.png', {
+		tms: true,
+		opacity: 1.0,
+		minZoom: 7,
+		maxNativeZoom: 15,
+		attribution: "OS Terrain 5 © Crown copyright and database rights 2020 Ordnance Survey (100025252)"
+	});
+    var lyr0 = L.tileLayer('https://geoffrowland.github.io/Hillshade-25m/{z}/{x}/{y}.png', {
+		tms: true,
+		opacity: 1.0,
+		minZoom: 4,
+		maxNativeZoom: 10,
+		attribution: "EU-DEM © Copernicus Programme 2020 European Environment Agency"
+	});
+    var lyr1 = L.tileLayer('https://geoffrowland.github.io/Hillshade-5m-East/{z}/{x}/{y}.png', {
+		tms: true,
+		opacity: 1.0,
+		minZoom: 7,
+		maxNativeZoom: 15,
+		attribution: "OS Terrain 5 © Crown copyright and database rights 2020 Ordnance Survey (100025252)"
+	});
+    var lyr6 = L.tileLayer('https://geoffrowland.github.io/Hillshade-5m-West/{z}/{x}/{y}.png', {
+		tms: true,
+		opacity: 1.0,
+		minZoom: 7,
+		maxNativeZoom: 15,
+		attribution: "OS Terrain 5 © Crown copyright and database rights 2020 Ordnance Survey (100025252)"
+	});		
+	var lyr2 = L.tileLayer('https://geoffrowland.github.io/Hillshade-2m-Coast/{z}/{x}/{y}.png', {
+		tms: true,
+		opacity: 1.0,
+		minZoom: 10,
+		maxNativeZoom: 15,
+		attribution: "SurfZone DEM 2014 Open Government Licence © Environment Agency copyright and/or database right 2020"
+	});
+	var lyr3 = L.tileLayer('https://geoffrowland.github.io/Hillshade-2m/{z}/{x}/{y}.png', {
+		tms: true,
+		opacity: 1.0,
+		minZoom: 11,
+		maxNativeZoom: 15,
+		attribution: "LIDAR DTM 2m Open Government Licence © Environment Agency and database rights 2020"
+	});
+	var lyr4 = L.tileLayer('https://geoffrowland.github.io/Hillshade-1m-Devon/{z}/{x}/{y}.png', {
+		tms: true,
+		opacity: 1.0,
+		minZoom: 13,
+		maxNativeZoom: 16,
+		attribution: "LIDAR DTM 1m Open Government Licence © Environment Agency and database rights 2020"
+	});
+	var lyr5 = L.tileLayer('https://geoffrowland.github.io/Hillshade-1m-Devon-Dorset-Somerset/{z}/{x}/{y}.png', {
+		tms: true,
+		opacity: 1.0,
+		minZoom: 13,
+		maxNativeZoom: 16,
+		attribution: "LIDAR DTM 1m Open Government Licence © Environment Agency and database rights 2020"
+	});
+        // Map
+        var map = L.map('map', {
+            center: [50.4, -4.8],
+            zoom: 10,
+            minZoom: 4,
+            maxZoom: 18,
+            layers: [osm, lyr]
+        });
+
+        var basemaps = {"OpenStreetMap": osm, "Grey": grey, "White": white}
+        var overlaymaps = {"Hillshade 25m": lyr0, "Hillshade 5m East": lyr1, "Hillshade 5m West": lyr6, "Hillshade 5m Cornwall": lyr, "Hillshade 2m Coast": lyr2, "Hillshade 2m": lyr3, "Hillshade 1m Devon": lyr4, "Tile grid": grid}
+
+        // Note
+        //var src = 'Generated by <a href="http://www.klokan.cz/projects/gdal2tiles/">GDAL2Tiles</a>, Copyright &copy; 2008 <a href="http://www.klokan.cz/">Klokan Petr Pridal</a>,  <a href="http://www.gdal.org/">GDAL</a> &amp; <a href="http://www.osgeo.org/">OSGeo</a> <a href="http://code.google.com/soc/">GSoC</a>';
+   
+	// Add base layers
+        L.control.layers(basemaps, overlaymaps, {
+		collapsed: true
+	}).addTo(map);
+
+        </script>
+
+        </body>
+        </html>       
